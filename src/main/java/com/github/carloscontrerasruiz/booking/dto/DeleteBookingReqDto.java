@@ -9,10 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateBookingResDto {
-    private int reservationCode;
-    private String arriveDate;
-    private String leaveDate;
-    private String email;
-    private int roomNumber;
+public class DeleteBookingReqDto {
+    private String reason;
 }

@@ -32,14 +32,18 @@ public class Booking {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
+    @Column(name = "updated_at", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedAt;
+
     @Column(name = "room_number", nullable = false)
     private int roomNumber;
 
     @Column(name = "active", nullable = false)
     private boolean isActive;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Column(name = "email", nullable = false, unique = true)
+    private String email;
 
     @OneToOne(mappedBy = "booking")
     private BookingCancellation bookingCancellation;

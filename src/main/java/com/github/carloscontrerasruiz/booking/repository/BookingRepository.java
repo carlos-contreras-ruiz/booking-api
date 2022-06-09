@@ -12,9 +12,11 @@ import java.util.List;
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Integer> {
 
-    @Query("SELECT b FROM Booking b WHERE b.arriveDate BETWEEN :startDate AND :endDate OR b.leaveDate BETWEEN :startDate AND :endDate")
+    @Query("SELECT b FROM Booking b WHERE b.arriveDate BETWEEN :startDate AND :endDate OR b.leaveDate BETWEEN :startDate AND :endDate AND isActive = true")
     List<Booking> findAvailability(
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate
     );
+
+    List<Booking> findByIsActive(boolean isActive);
 }
