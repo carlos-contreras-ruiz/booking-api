@@ -38,6 +38,9 @@ public class Booking {
     @Column(name = "active", nullable = false)
     private boolean isActive;
 
+    @Column(name = "name", nullable = false)
+    private String name;
+
     @OneToOne(mappedBy = "booking")
     private BookingCancellation bookingCancellation;
 }
