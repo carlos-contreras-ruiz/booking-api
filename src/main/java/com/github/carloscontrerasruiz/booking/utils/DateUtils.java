@@ -1,5 +1,7 @@
 package com.github.carloscontrerasruiz.booking.utils;
 
+import com.github.carloscontrerasruiz.booking.constants.Constants;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -36,19 +38,19 @@ public class DateUtils {
         Date today = new Date();
         //Check the start date must be before than the leave date
         if (!DateUtils.isStartBeforeEnd(startDate, endDate)) {
-            return "The start date can not be after than the end date";
+            return Constants.START_DATE_BEFORE_END;
         }
         //Only 3 days stay
         if (DateUtils.isTheRangeGreaterThanMaxDays(startDate, endDate, maxDaysStay)) {
-            return "The stay must be for 3 days maximum";
+            return Constants.MAXIMUM_STAY_DAYS;
         }
         //The reservation must not be done more than 30 days in advance
         if (DateUtils.isTheRangeGreaterThanMaxDays(today, startDate, maxDaysPreviousBooking)) {
-            return "The reservation can not be done more than 30 days earlier";
+            return Constants.MAX_DAYS_PREV_BOOK;
         }
         //The arrival date must be at least 1 day after the booking date
         if (!DateUtils.isBookingOneDayAfter(startDate, today)) {
-            return "The book must be start at least one day after the booking date";
+            return Constants.BOOKING_ONE_DAY_AFTER;
         }
         return null;
     }

@@ -1,5 +1,6 @@
 package com.github.carloscontrerasruiz.booking.service;
 
+import com.github.carloscontrerasruiz.booking.constants.Constants;
 import com.github.carloscontrerasruiz.booking.dto.*;
 import com.github.carloscontrerasruiz.booking.entity.Booking;
 import com.github.carloscontrerasruiz.booking.entity.BookingCancellation;
@@ -33,7 +34,7 @@ public class BookingServiceImpl implements BookingService {
 
         if (startDate == null || endDate == null) {
             return ResponseUtils.generateGeneralResponse(null,
-                    "Date format incorrect mm/dd/yyyy",
+                    Constants.DATE_FORMAT_INVALID,
                     HttpStatus.BAD_REQUEST);
         }
 
@@ -63,7 +64,7 @@ public class BookingServiceImpl implements BookingService {
         //Check the format date
         if (startDate == null || endDate == null) {
             return ResponseUtils.generateGeneralResponse(null,
-                    "Date format incorrect mm/dd/yyyy",
+                    Constants.DATE_FORMAT_INVALID,
                     HttpStatus.BAD_REQUEST);
         }
         //Validate dates
@@ -77,7 +78,7 @@ public class BookingServiceImpl implements BookingService {
         //Rooms available
         if (!isRoomAvailable(startDate, endDate)) {
             return ResponseUtils.generateGeneralResponse(null,
-                    "There are not rooms available for the range",
+                    Constants.NO_ROOMS_AVAILABLE,
                     HttpStatus.BAD_REQUEST);
         }
 
@@ -113,7 +114,7 @@ public class BookingServiceImpl implements BookingService {
         //Check the format date
         if (startDate == null || endDate == null) {
             return ResponseUtils.generateGeneralResponse(null,
-                    "Date format incorrect mm/dd/yyyy",
+                    Constants.DATE_FORMAT_INVALID,
                     HttpStatus.BAD_REQUEST);
         }
         //Validate dates
@@ -127,7 +128,7 @@ public class BookingServiceImpl implements BookingService {
         final Optional<Booking> bookOptional = bookingRepository.findByIdAndIsActive(idBook, true);
         if (!bookOptional.isPresent()) {
             return ResponseUtils.generateGeneralResponse(null,
-                    "The booking not exist",
+                    Constants.BOOKING_NOT_EXIST,
                     HttpStatus.NOT_FOUND);
         }
         Booking booking = bookOptional.get();
@@ -138,7 +139,7 @@ public class BookingServiceImpl implements BookingService {
                 request.getEmail().equals(booking.getEmail())
         ) {
             return ResponseUtils.generateGeneralResponse(null,
-                    "There are not rooms available for the range",
+                    Constants.NO_ROOMS_AVAILABLE,
                     HttpStatus.BAD_REQUEST);
         }
 
@@ -154,7 +155,7 @@ public class BookingServiceImpl implements BookingService {
         //Rooms available
         if (!onlyEmail && !isRoomAvailableUpdate(startDate, endDate, booking.getId())) {
             return ResponseUtils.generateGeneralResponse(null,
-                    "There are not rooms available for the range",
+                    Constants.NO_ROOMS_AVAILABLE,
                     HttpStatus.BAD_REQUEST);
         }
 
@@ -181,7 +182,7 @@ public class BookingServiceImpl implements BookingService {
         final Optional<Booking> bookOptional = bookingRepository.findByIdAndIsActive(idBook, true);
         if (!bookOptional.isPresent()) {
             return ResponseUtils.generateGeneralResponse(null,
-                    "The booking not exist",
+                    Constants.BOOKING_NOT_EXIST,
                     HttpStatus.NOT_FOUND);
         }
 
@@ -208,7 +209,7 @@ public class BookingServiceImpl implements BookingService {
         final Optional<Booking> bookOptional = bookingRepository.findById(idBook);
         if (!bookOptional.isPresent()) {
             return ResponseUtils.generateGeneralResponse(null,
-                    "The booking not exist",
+                    Constants.BOOKING_NOT_EXIST,
                     HttpStatus.NOT_FOUND);
         }
 
