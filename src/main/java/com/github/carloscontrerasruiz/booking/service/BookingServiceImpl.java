@@ -124,25 +124,44 @@ public class BookingServiceImpl implements BookingService {
                     HttpStatus.BAD_REQUEST);
         }
 
-        //Rooms available
-        if (!isRoomAvailable(startDate, endDate)) {
+        final Optional<Booking> bookOptional = bookingRepository.findByIdAndIsActive(idBook, true);
+        if (!bookOptional.isPresent()) {
+            return ResponseUtils.generateGeneralResponse(null,
+                    "The booking not exist",
+                    HttpStatus.NOT_FOUND);
+        }
+        Booking booking = bookOptional.get();
+
+        //Check if the dates and the email are the same
+        if (startDate.compareTo(booking.getArriveDate()) == 0 &&
+                endDate.compareTo(booking.getLeaveDate()) == 0 &&
+                request.getEmail().equals(booking.getEmail())
+        ) {
             return ResponseUtils.generateGeneralResponse(null,
                     "There are not rooms available for the range",
                     HttpStatus.BAD_REQUEST);
         }
 
-        final Optional<Booking> bookOptional = bookingRepository.findById(idBook);
-        if (!bookOptional.isPresent()) {
+        //Check if the dates are the same but the email is diferrent
+        boolean onlyEmail = false;
+        if (startDate.compareTo(booking.getArriveDate()) == 0 &&
+                endDate.compareTo(booking.getLeaveDate()) == 0 &&
+                !request.getEmail().equals(booking.getEmail())
+        ) {
+            onlyEmail = true;
+        }
+
+        //Rooms available
+        if (!onlyEmail && !isRoomAvailableUpdate(startDate, endDate, booking.getId())) {
             return ResponseUtils.generateGeneralResponse(null,
-                    "The booking not exist",
+                    "There are not rooms available for the range",
                     HttpStatus.BAD_REQUEST);
         }
 
-        Booking booking = bookOptional.get();
         booking.setArriveDate(startDate);
         booking.setLeaveDate(endDate);
         booking.setUpdatedAt(today);
-        if (request.getEmail() != null || !request.getEmail().isEmpty()) booking.setEmail(request.getEmail());
+        if (request.getEmail() != null && !request.getEmail().isEmpty()) booking.setEmail(request.getEmail());
         //Save the booking
         booking = bookingRepository.save(booking);
 
@@ -159,11 +178,11 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public GeneralResponse<CheckAvailabilityResDto> deleteBooking(DeleteBookingReqDto request, int idBook) {
-        final Optional<Booking> bookOptional = bookingRepository.findById(idBook);
+        final Optional<Booking> bookOptional = bookingRepository.findByIdAndIsActive(idBook, true);
         if (!bookOptional.isPresent()) {
             return ResponseUtils.generateGeneralResponse(null,
                     "The booking not exist",
-                    HttpStatus.BAD_REQUEST);
+                    HttpStatus.NOT_FOUND);
         }
 
         Booking booking = bookOptional.get();
@@ -173,9 +192,7 @@ public class BookingServiceImpl implements BookingService {
         bookingCancellationRepository.save(BookingCancellation.builder()
                 .cancelledAt(new Date())
                 .booking(booking)
-                .reason(
-                        request.getReason().isEmpty() ? "" : request.getReason()
-                )
+                .reason(request.getReason())
                 .build()
         );
 
@@ -192,7 +209,7 @@ public class BookingServiceImpl implements BookingService {
         if (!bookOptional.isPresent()) {
             return ResponseUtils.generateGeneralResponse(null,
                     "The booking not exist",
-                    HttpStatus.BAD_REQUEST);
+                    HttpStatus.NOT_FOUND);
         }
 
         Booking booking = bookOptional.get();
@@ -225,6 +242,16 @@ public class BookingServiceImpl implements BookingService {
 
     private boolean isRoomAvailable(Date startDate, Date endDate) {
         final List<Booking> bookings = bookingRepository.findAvailability(startDate, endDate);
-        return bookings.isEmpty();
+        final List<Booking> collect = bookings.stream().filter(e -> e.isActive() == true).collect(Collectors.toList());
+        return collect.isEmpty();
+    }
+
+    private boolean isRoomAvailableUpdate(Date startDate, Date endDate, int bookId) {
+        final List<Booking> bookings = bookingRepository.findAvailability(startDate, endDate);
+        final List<Booking> collect = bookings.stream()
+                .filter(e -> e.getId() != bookId)
+                .filter(e -> e.isActive() == true)
+                .collect(Collectors.toList());
+        return collect.isEmpty();
     }
 }

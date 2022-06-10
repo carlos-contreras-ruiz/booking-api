@@ -42,7 +42,7 @@ public class Booking {
     @Column(name = "active", nullable = false)
     private boolean isActive;
 
-    @Column(name = "email", nullable = false, unique = true)
+    @Column(name = "email", nullable = false)
     private String email;
 
     @OneToOne(mappedBy = "booking")

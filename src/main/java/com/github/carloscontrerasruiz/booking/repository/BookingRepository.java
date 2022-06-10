@@ -8,15 +8,18 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Integer> {
 
-    @Query("SELECT b FROM Booking b WHERE b.arriveDate BETWEEN :startDate AND :endDate OR b.leaveDate BETWEEN :startDate AND :endDate AND isActive = true")
+    @Query("SELECT b FROM Booking b WHERE b.arriveDate BETWEEN :startDate AND :endDate OR b.leaveDate BETWEEN :startDate AND :endDate")
     List<Booking> findAvailability(
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate
     );
 
     List<Booking> findByIsActive(boolean isActive);
+
+    Optional<Booking> findByIdAndIsActive(int id, boolean isActive);
 }

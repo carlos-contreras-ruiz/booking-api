@@ -3,8 +3,10 @@ package com.github.carloscontrerasruiz.booking.service;
 import com.github.carloscontrerasruiz.booking.dto.CreateBookingResDto;
 import com.github.carloscontrerasruiz.booking.dto.GeneralResponse;
 import com.github.carloscontrerasruiz.booking.dto.cancellation.BookCancellationResp;
+import com.github.carloscontrerasruiz.booking.entity.Booking;
 import com.github.carloscontrerasruiz.booking.entity.BookingCancellation;
 import com.github.carloscontrerasruiz.booking.repository.BookingCancellationRepository;
+import com.github.carloscontrerasruiz.booking.repository.BookingRepository;
 import com.github.carloscontrerasruiz.booking.service.interfaces.BookingCancellationService;
 import com.github.carloscontrerasruiz.booking.utils.ResponseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,9 @@ public class BookingCancellationServiceImpl implements BookingCancellationServic
 
     @Autowired
     private BookingCancellationRepository repository;
+
+    @Autowired
+    private BookingRepository bookingRepository;
 
     @Override
     public GeneralResponse<List<BookCancellationResp>> getAllCancellations() {
@@ -50,7 +55,7 @@ public class BookingCancellationServiceImpl implements BookingCancellationServic
         if (!optional.isPresent()) {
             return ResponseUtils.generateGeneralResponse(null,
                     "The cancellation does not exist",
-                    HttpStatus.BAD_REQUEST);
+                    HttpStatus.NOT_FOUND);
         }
 
         BookingCancellation cancellation = optional.get();
@@ -75,14 +80,22 @@ public class BookingCancellationServiceImpl implements BookingCancellationServic
 
     @Override
     public GeneralResponse<BookCancellationResp> getCancellationByBookId(int id) {
-        final List<BookingCancellation> byBooking = repository.findByBooking(id);
-        if (byBooking.size() <= 0) {
+        final Optional<Booking> byBooking = bookingRepository.findById(id);
+        if (!byBooking.isPresent()) {
             return ResponseUtils.generateGeneralResponse(null,
                     "The cancellation does not exist",
-                    HttpStatus.BAD_REQUEST);
+                    HttpStatus.NOT_FOUND);
         }
 
-        final BookingCancellation bookingCancellation = byBooking.get(0);
+        final Booking booking = byBooking.get();
+
+        if (booking.isActive()) {
+            return ResponseUtils.generateGeneralResponse(null,
+                    "The cancellation does not exist",
+                    HttpStatus.NOT_FOUND);
+        }
+
+        final BookingCancellation bookingCancellation = booking.getBookingCancellation();
         return ResponseUtils.generateGeneralResponse(
                 BookCancellationResp.builder()
                         .id(bookingCancellation.getId())
