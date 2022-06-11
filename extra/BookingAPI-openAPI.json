@@ -1,0 +1,265 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Booking API",
+    "description": "The best Booking API for the very last hotel in Cancun",
+    "version": "v1.0.0"
+  },
+  "servers": [{ "url": "http://localhost:8787", "description": "Generated server url" }],
+  "paths": {
+    "/api/v1/booking/{id}": {
+      "get": {
+        "tags": ["booking-controller"],
+        "operationId": "getBookingById",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer", "format": "int32" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/GeneralResponseCreateBookingResDto" } }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["booking-controller"],
+        "operationId": "updateBooking",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer", "format": "int32" } }
+        ],
+        "requestBody": {
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UpdateBookingReqDto" } } },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/GeneralResponseCreateBookingResDto" } }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["booking-controller"],
+        "operationId": "deleteBooking",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer", "format": "int32" } }
+        ],
+        "requestBody": {
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DeleteBookingReqDto" } } },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/GeneralResponseCheckAvailabilityResDto" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/booking/checkRoomAvailability": {
+      "post": {
+        "tags": ["booking-controller"],
+        "operationId": "checkRoomAvailability",
+        "requestBody": {
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CheckAvailabilityReqDto" } } },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/GeneralResponseCheckAvailabilityResDto" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/booking/": {
+      "get": {
+        "tags": ["booking-controller"],
+        "operationId": "getAllBookings",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/GeneralResponseListCreateBookingResDto" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["booking-controller"],
+        "operationId": "createBooking",
+        "requestBody": {
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateBookingReqDto" } } },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/GeneralResponseCreateBookingResDto" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/booking/cancellation/{id}": {
+      "get": {
+        "tags": ["booking-cancellation-controller"],
+        "operationId": "getCancellationById",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer", "format": "int32" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/GeneralResponseBookCancellationResp" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/booking/cancellation/book/{id}": {
+      "get": {
+        "tags": ["booking-cancellation-controller"],
+        "operationId": "getCancellationByBookId",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer", "format": "int32" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/GeneralResponseBookCancellationResp" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/booking/cancellation/": {
+      "get": {
+        "tags": ["booking-cancellation-controller"],
+        "operationId": "getAllCancellations",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/GeneralResponseListBookCancellationResp" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UpdateBookingReqDto": {
+        "required": ["arriveDate", "leaveDate"],
+        "type": "object",
+        "properties": {
+          "arriveDate": { "pattern": "^\\d{2}/\\d{2}/\\d{4}$", "type": "string" },
+          "leaveDate": { "pattern": "^\\d{2}/\\d{2}/\\d{4}$", "type": "string" },
+          "email": { "pattern": "^(.+)@(\\S+)$", "type": "string" }
+        }
+      },
+      "CreateBookingResDto": {
+        "type": "object",
+        "properties": {
+          "reservationCode": { "type": "integer", "format": "int32" },
+          "arriveDate": { "type": "string" },
+          "leaveDate": { "type": "string" },
+          "email": { "type": "string" },
+          "roomNumber": { "type": "integer", "format": "int32" }
+        }
+      },
+      "GeneralResponseCreateBookingResDto": {
+        "type": "object",
+        "properties": {
+          "httpCode": { "type": "string" },
+          "body": { "$ref": "#/components/schemas/CreateBookingResDto" },
+          "errorMessage": { "type": "string" }
+        }
+      },
+      "CheckAvailabilityReqDto": {
+        "required": ["endDate", "startDate"],
+        "type": "object",
+        "properties": {
+          "startDate": { "pattern": "^\\d{2}/\\d{2}/\\d{4}$", "type": "string" },
+          "endDate": { "pattern": "^\\d{2}/\\d{2}/\\d{4}$", "type": "string" }
+        }
+      },
+      "CheckAvailabilityResDto": { "type": "object", "properties": { "roomAvailable": { "type": "boolean" } } },
+      "GeneralResponseCheckAvailabilityResDto": {
+        "type": "object",
+        "properties": {
+          "httpCode": { "type": "string" },
+          "body": { "$ref": "#/components/schemas/CheckAvailabilityResDto" },
+          "errorMessage": { "type": "string" }
+        }
+      },
+      "CreateBookingReqDto": {
+        "required": ["arriveDate", "email", "leaveDate"],
+        "type": "object",
+        "properties": {
+          "arriveDate": { "pattern": "^\\d{2}/\\d{2}/\\d{4}$", "type": "string" },
+          "leaveDate": { "pattern": "^\\d{2}/\\d{2}/\\d{4}$", "type": "string" },
+          "email": { "pattern": "^(.+)@(\\S+)$", "type": "string" }
+        }
+      },
+      "BookCancellationResp": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int32" },
+          "cancelledAt": { "type": "string", "format": "date-time" },
+          "reason": { "type": "string" },
+          "book": { "$ref": "#/components/schemas/CreateBookingResDto" }
+        }
+      },
+      "GeneralResponseBookCancellationResp": {
+        "type": "object",
+        "properties": {
+          "httpCode": { "type": "string" },
+          "body": { "$ref": "#/components/schemas/BookCancellationResp" },
+          "errorMessage": { "type": "string" }
+        }
+      },
+      "GeneralResponseListBookCancellationResp": {
+        "type": "object",
+        "properties": {
+          "httpCode": { "type": "string" },
+          "body": { "type": "array", "items": { "$ref": "#/components/schemas/BookCancellationResp" } },
+          "errorMessage": { "type": "string" }
+        }
+      },
+      "GeneralResponseListCreateBookingResDto": {
+        "type": "object",
+        "properties": {
+          "httpCode": { "type": "string" },
+          "body": { "type": "array", "items": { "$ref": "#/components/schemas/CreateBookingResDto" } },
+          "errorMessage": { "type": "string" }
+        }
+      },
+      "DeleteBookingReqDto": {
+        "required": ["reason"],
+        "type": "object",
+        "properties": { "reason": { "type": "string" } }
+      }
+    }
+  }
+}
